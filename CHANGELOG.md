@@ -9,6 +9,17 @@ All notable changes to BatchTrack.
 - **Features Page**: Dedicated `/features` page with detailed marketing content for all 6 product features, mockup UI previews, and anchor navigation
 - **How It Works Section**: 3-step guide on home page (Add Ingredients → Build Recipes → Track Production)
 - **Feature Deep Links**: "Learn more" links on home page feature cards linking to `/features#[section]`
+- **SEO Meta Files**: `robots.ts`, `sitemap.ts`, dynamic OG/Twitter images for social sharing
+- **Favicons**: SVG favicon, dynamic PNG icon, Apple touch icon with amber brand color
+- **Hero Dashboard Mockup**: Interactive dashboard preview in home page hero section
+- **Legal Pages**: Privacy Policy (`/privacy`) and Terms of Service (`/terms`)
+- **Shared Footer**: Expanded footer with product links and legal links
+
+### Changed
+
+- **Color Palette**: Warm amber tones (`#f59e0b` primary) replacing grayscale for food industry branding
+- **Home Page Layout**: Two-column hero with text and dashboard mockup
+- **Root Metadata**: Enhanced with keywords, viewport theme-color, Open Graph, and Twitter cards
 
 ## [0.1.0] - 2025-01-26
 

@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { DashboardMockup } from '@/components/marketing/dashboard-mockup';
+import { Footer } from '@/components/marketing/footer';
 import {
   Package,
   Calculator,
@@ -18,6 +20,24 @@ import {
   ArrowRight,
   CheckCircle,
 } from 'lucide-react';
+
+export const metadata = {
+  title: 'BatchTrack - Know Your True Cost of Goods',
+  description:
+    'Inventory management and recipe costing for bakeries, breweries, and food producers. Track ingredients, calculate COGS, and manage production with BatchTrack.',
+  keywords: [
+    'inventory management',
+    'recipe costing',
+    'COGS calculator',
+    'bakery software',
+    'brewery inventory',
+    'food production software',
+    'batch tracking',
+    'ingredient management',
+    'cost of goods sold',
+    'production management',
+  ],
+};
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -52,25 +72,35 @@ export default async function LandingPage() {
 
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-            Know Your True
-            <span className="text-primary"> Cost of Goods</span>
-          </h1>
-          <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto">
-            BatchTrack helps bakeries, breweries, and food producers track inventory,
-            manage recipes, and understand their real production costs.
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild>
-              <Link href="/sign-up">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/features">Learn More</Link>
-            </Button>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Hero Text */}
+            <div className="text-center lg:text-left">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
+                Know Your True
+                <span className="text-primary"> Cost of Goods</span>
+              </h1>
+              <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
+                BatchTrack helps bakeries, breweries, and food producers track inventory,
+                manage recipes, and understand their real production costs.
+              </p>
+              <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Button size="lg" asChild>
+                  <Link href="/sign-up">
+                    Start Free Trial
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/features">Learn More</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Dashboard Mockup */}
+            <div className="lg:pl-8">
+              <DashboardMockup />
+            </div>
           </div>
         </div>
       </section>
@@ -378,19 +408,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-primary" />
-              <span className="font-semibold">BatchTrack</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} BatchTrack. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -24,6 +24,7 @@ import {
   AlertsMockup,
   AnalyticsMockup,
 } from '@/components/marketing/feature-mockups';
+import { Footer } from '@/components/marketing/footer';
 
 export const metadata = {
   title: 'Features | BatchTrack',
@@ -292,19 +293,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-primary" />
-              <span className="font-semibold">BatchTrack</span>
-            </Link>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} BatchTrack. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
