@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Package,
   Calculator,
@@ -69,8 +69,71 @@ export default async function LandingPage() {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="#features">Learn More</Link>
+              <Link href="/features">Learn More</Link>
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold">How It Works</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Get started in three simple steps
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
+            {/* Step 1 */}
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Package className="h-8 w-8 text-primary" />
+              </div>
+              <div className="text-sm font-medium text-primary mb-2">Step 1</div>
+              <h3 className="text-xl font-semibold mb-2">Add Ingredients</h3>
+              <p className="text-muted-foreground">
+                Enter your raw materials with purchase prices and unit conversions.
+                BatchTrack calculates your cost per usage unit automatically.
+              </p>
+            </div>
+
+            {/* Arrow (hidden on mobile) */}
+            <div className="hidden md:flex items-center justify-center">
+              <ArrowRight className="h-8 w-8 text-muted-foreground/30" />
+            </div>
+
+            {/* Step 2 */}
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Calculator className="h-8 w-8 text-primary" />
+              </div>
+              <div className="text-sm font-medium text-primary mb-2">Step 2</div>
+              <h3 className="text-xl font-semibold mb-2">Build Recipes</h3>
+              <p className="text-muted-foreground">
+                Create recipes with your ingredients. See real-time cost calculations
+                as you build your bill of materials.
+              </p>
+            </div>
+
+            {/* Arrow (hidden on mobile) */}
+            <div className="hidden md:flex items-center justify-center">
+              <ArrowRight className="h-8 w-8 text-muted-foreground/30" />
+            </div>
+
+            {/* Step 3 */}
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                <Factory className="h-8 w-8 text-primary" />
+              </div>
+              <div className="text-sm font-medium text-primary mb-2">Step 3</div>
+              <h3 className="text-xl font-semibold mb-2">Track Production</h3>
+              <p className="text-muted-foreground">
+                Start batches from your recipes. Inventory updates automatically
+                and you know exactly what each batch costs.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -86,7 +149,7 @@ export default async function LandingPage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
+            <Card className="flex flex-col">
               <CardHeader>
                 <Package className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Ingredient Management</CardTitle>
@@ -95,9 +158,17 @@ export default async function LandingPage() {
                   what a gram of flour costs you.
                 </CardDescription>
               </CardHeader>
+              <CardFooter className="mt-auto pt-0">
+                <Link
+                  href="/features#ingredients"
+                  className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="h-3 w-3" />
+                </Link>
+              </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="flex flex-col">
               <CardHeader>
                 <Calculator className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Recipe Costing</CardTitle>
@@ -106,9 +177,17 @@ export default async function LandingPage() {
                   batch costs to produce.
                 </CardDescription>
               </CardHeader>
+              <CardFooter className="mt-auto pt-0">
+                <Link
+                  href="/features#recipes"
+                  className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="h-3 w-3" />
+                </Link>
+              </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="flex flex-col">
               <CardHeader>
                 <Factory className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Batch Production</CardTitle>
@@ -117,9 +196,17 @@ export default async function LandingPage() {
                   automatically update inventory.
                 </CardDescription>
               </CardHeader>
+              <CardFooter className="mt-auto pt-0">
+                <Link
+                  href="/features#production"
+                  className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="h-3 w-3" />
+                </Link>
+              </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="flex flex-col">
               <CardHeader>
                 <Trash2 className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Waste Tracking</CardTitle>
@@ -128,9 +215,17 @@ export default async function LandingPage() {
                   optimize your processes.
                 </CardDescription>
               </CardHeader>
+              <CardFooter className="mt-auto pt-0">
+                <Link
+                  href="/features#waste"
+                  className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="h-3 w-3" />
+                </Link>
+              </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="flex flex-col">
               <CardHeader>
                 <Bell className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Low Stock Alerts</CardTitle>
@@ -139,9 +234,17 @@ export default async function LandingPage() {
                   below your thresholds.
                 </CardDescription>
               </CardHeader>
+              <CardFooter className="mt-auto pt-0">
+                <Link
+                  href="/features#alerts"
+                  className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="h-3 w-3" />
+                </Link>
+              </CardFooter>
             </Card>
 
-            <Card>
+            <Card className="flex flex-col">
               <CardHeader>
                 <BarChart3 className="h-10 w-10 text-primary mb-2" />
                 <CardTitle>Analytics & Reports</CardTitle>
@@ -150,6 +253,14 @@ export default async function LandingPage() {
                   data-driven decisions.
                 </CardDescription>
               </CardHeader>
+              <CardFooter className="mt-auto pt-0">
+                <Link
+                  href="/features#analytics"
+                  className="text-sm text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="h-3 w-3" />
+                </Link>
+              </CardFooter>
             </Card>
           </div>
         </div>

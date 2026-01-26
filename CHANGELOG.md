@@ -2,6 +2,14 @@
 
 All notable changes to BatchTrack.
 
+## [Unreleased]
+
+### Added
+
+- **Features Page**: Dedicated `/features` page with detailed marketing content for all 6 product features, mockup UI previews, and anchor navigation
+- **How It Works Section**: 3-step guide on home page (Add Ingredients → Build Recipes → Track Production)
+- **Feature Deep Links**: "Learn more" links on home page feature cards linking to `/features#[section]`
+
 ## [0.1.0] - 2025-01-26
 
 ### Added
