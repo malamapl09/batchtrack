@@ -14,8 +14,16 @@ All notable changes to BatchTrack.
 - **Hero Dashboard Mockup**: Interactive dashboard preview in home page hero section
 - **Legal Pages**: Privacy Policy (`/privacy`) and Terms of Service (`/terms`)
 - **Shared Footer**: Expanded footer with product links and legal links
+- **Google Analytics 4**: Usage tracking with gtag integration
+- **Sentry Error Monitoring**: Client/server error tracking with global error boundary
+- **Email System**: Resend integration with Welcome and Low Stock Alert templates
 
 ### Changed
+
+- **Privacy Policy**: Comprehensive rewrite with GDPR/CCPA compliance, data processors, cookies, retention schedule, breach notification
+- **Terms of Service**: Comprehensive rewrite with SLA (99.9% uptime), acceptable use policy, DMCA, dispute resolution, force majeure
+
+### Infrastructure
 
 - **Color Palette**: Warm amber tones (`#f59e0b` primary) replacing grayscale for food industry branding
 - **Home Page Layout**: Two-column hero with text and dashboard mockup
