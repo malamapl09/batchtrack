@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DashboardMockup } from '@/components/marketing/dashboard-mockup';
 import { Footer } from '@/components/marketing/footer';
+import { PricingSection } from '@/components/billing/pricing-cards';
 import {
   Package,
   Calculator,
@@ -18,7 +19,6 @@ import {
   Trash2,
   Bell,
   ArrowRight,
-  CheckCircle,
 } from 'lucide-react';
 
 export const metadata = {
@@ -297,99 +297,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold">Simple Pricing</h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Start free, upgrade when you need more
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Starter</CardTitle>
-                <CardDescription>Perfect for small operations</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">$39</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Up to 50 ingredients</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Up to 25 recipes</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>1 user</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Basic reports</span>
-                  </li>
-                </ul>
-                <Button className="w-full mt-6" variant="outline" asChild>
-                  <Link href="/sign-up">Start Free Trial</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-primary">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Pro</CardTitle>
-                  <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                    Popular
-                  </span>
-                </div>
-                <CardDescription>For growing businesses</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">$89</span>
-                  <span className="text-muted-foreground">/month</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Unlimited ingredients</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Unlimited recipes</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Up to 5 users</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Advanced analytics</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>CSV import/export</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Priority support</span>
-                  </li>
-                </ul>
-                <Button className="w-full mt-6" asChild>
-                  <Link href="/sign-up">Start Free Trial</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      <PricingSection />
 
       {/* CTA Section */}
       <section className="py-20 bg-primary text-primary-foreground">

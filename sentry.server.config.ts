@@ -1,6 +1,6 @@
 /**
  * Sentry Server Configuration
- * Initializes error tracking for server-side errors
+ * Initializes error tracking and logging for server-side
  * Requires NEXT_PUBLIC_SENTRY_DSN env variable
  */
 
@@ -12,11 +12,20 @@ if (SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
 
+    // Enable logging to Sentry
+    enableLogs: true,
+
     // Performance monitoring sample rate
     tracesSampleRate: 1.0,
 
     // Only enable in production
     enabled: process.env.NODE_ENV === 'production',
+
+    // Integrations
+    integrations: [
+      // Send console.log, console.warn, and console.error to Sentry as logs
+      Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+    ],
 
     // Filter out noisy errors
     ignoreErrors: [

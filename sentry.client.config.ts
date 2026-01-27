@@ -1,6 +1,6 @@
 /**
  * Sentry Client Configuration
- * Initializes error tracking for browser-side errors
+ * Initializes error tracking and logging for browser-side
  * Requires NEXT_PUBLIC_SENTRY_DSN env variable
  */
 
@@ -12,6 +12,9 @@ if (SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
 
+    // Enable logging to Sentry
+    enableLogs: true,
+
     // Performance monitoring sample rate (0.0 to 1.0)
     // Adjust in production based on traffic volume
     tracesSampleRate: 1.0,
@@ -19,7 +22,7 @@ if (SENTRY_DSN) {
     // Only enable in production
     enabled: process.env.NODE_ENV === 'production',
 
-    // Capture unhandled promise rejections
+    // Integrations
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
@@ -27,6 +30,8 @@ if (SENTRY_DSN) {
         maskAllText: true,
         blockAllMedia: true,
       }),
+      // Send console.warn and console.error to Sentry as logs
+      Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] }),
     ],
 
     // Session replay sample rates

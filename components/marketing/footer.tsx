@@ -8,7 +8,7 @@ import { Package } from 'lucide-react';
 
 const productLinks = [
   { label: 'Features', href: '/features' },
-  { label: 'Pricing', href: '/#pricing' },
+  { label: 'Pricing', href: '/pricing' },
 ];
 
 const legalLinks = [

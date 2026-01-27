@@ -8,8 +8,19 @@ import { Resend } from 'resend';
 import { WelcomeEmail } from './templates/welcome';
 import { LowStockAlertEmail } from './templates/low-stock-alert';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization of Resend client
+let resendClient: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resendClient) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set');
+    }
+    resendClient = new Resend(apiKey);
+  }
+  return resendClient;
+}
 
 // Default sender - update with your verified domain
 const DEFAULT_FROM = 'BatchTrack <noreply@batchtrack.com>';
@@ -24,7 +35,7 @@ export async function sendWelcomeEmail(params: {
   const { to, userName } = params;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: DEFAULT_FROM,
       to,
       subject: 'Welcome to BatchTrack!',
@@ -63,7 +74,7 @@ export async function sendLowStockAlert(params: {
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: DEFAULT_FROM,
       to,
       subject: `Low Stock Alert: ${items.length} item${items.length !== 1 ? 's' : ''} need reordering`,
@@ -94,7 +105,7 @@ export async function sendEmail(params: {
   const { to, subject, react, from = DEFAULT_FROM } = params;
 
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from,
       to,
       subject,

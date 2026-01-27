@@ -96,11 +96,13 @@ export default async function SettingsPage() {
             <Label>Plan</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium capitalize">
-                {organization?.plan || 'Starter'}
+                {organization?.plan || 'Free'}
               </span>
-              <Button variant="outline" size="sm" disabled>
-                Upgrade
-              </Button>
+              {organization?.plan !== 'pro' && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/pricing">Upgrade</Link>
+                </Button>
+              )}
             </div>
           </div>
           <Button disabled>Save Changes</Button>
@@ -142,13 +144,19 @@ export default async function SettingsPage() {
             Manage your subscription and billing
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button variant="outline" disabled>
-            Manage Billing
+        <CardContent className="space-y-2">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Current Plan:</span>
+            <span className="font-medium capitalize">
+              {organization?.plan || 'Free'}
+            </span>
+          </div>
+          <Button asChild>
+            <Link href="/settings/billing">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Manage Billing
+            </Link>
           </Button>
-          <p className="text-xs text-muted-foreground mt-2">
-            Billing portal coming soon
-          </p>
         </CardContent>
       </Card>
 

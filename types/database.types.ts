@@ -22,9 +22,8 @@ export type Database = {
           id: string;
           name: string;
           slug: string;
-          plan: 'starter' | 'pro';
-          stripe_customer_id: string | null;
-          stripe_subscription_id: string | null;
+          plan: 'free' | 'starter' | 'pro';
+          paddle_customer_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -32,9 +31,8 @@ export type Database = {
           id?: string;
           name: string;
           slug: string;
-          plan?: 'starter' | 'pro';
-          stripe_customer_id?: string | null;
-          stripe_subscription_id?: string | null;
+          plan?: 'free' | 'starter' | 'pro';
+          paddle_customer_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -42,9 +40,50 @@ export type Database = {
           id?: string;
           name?: string;
           slug?: string;
+          plan?: 'free' | 'starter' | 'pro';
+          paddle_customer_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          organization_id: string;
+          paddle_customer_id: string;
+          paddle_subscription_id: string;
+          plan: 'starter' | 'pro';
+          status: 'active' | 'trialing' | 'past_due' | 'paused' | 'canceled';
+          current_period_start: string | null;
+          current_period_end: string | null;
+          cancel_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          paddle_customer_id: string;
+          paddle_subscription_id: string;
+          plan: 'starter' | 'pro';
+          status: 'active' | 'trialing' | 'past_due' | 'paused' | 'canceled';
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          cancel_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          paddle_customer_id?: string;
+          paddle_subscription_id?: string;
           plan?: 'starter' | 'pro';
-          stripe_customer_id?: string | null;
-          stripe_subscription_id?: string | null;
+          status?: 'active' | 'trialing' | 'past_due' | 'paused' | 'canceled';
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          cancel_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };

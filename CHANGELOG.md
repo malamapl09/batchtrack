@@ -6,6 +6,34 @@ All notable changes to BatchTrack.
 
 ### Added
 
+- **Paddle Billing**: Subscription payments via Paddle (Merchant of Record)
+  - Pricing tiers: Free (10 ingredients, 5 recipes), Starter ($39/mo), Pro ($89/mo)
+  - Annual billing with 2 months free discount
+  - Webhook handler for subscription lifecycle events
+  - Customer billing portal at `/settings/billing`
+- **Plan Limits**: Enforced limits on ingredients, recipes, and users per plan
+  - Upgrade prompts when limits reached
+  - Usage progress bars in billing settings
+- **Pricing Page**: Dedicated `/pricing` page with plan comparison table and FAQ
+- **Sentry Logging**: Structured logging with `enableLogs` and console integration
+  - `lib/sentry` utilities for error capture, spans, and tracing
+
+### Changed
+
+- **Pricing UI**: Home page pricing section with monthly/yearly toggle
+- **Database Schema**: Added `subscriptions` table, updated `organizations.plan` to include 'free' tier
+- **Environment Variables**: Updated `.env.local.example` with all required vars (Paddle, Resend, Sentry)
+
+### Removed
+
+- **Stripe References**: Replaced with Paddle billing (removed `stripe_customer_id`, `stripe_subscription_id`)
+
+---
+
+## Previous Changes
+
+### Added
+
 - **Features Page**: Dedicated `/features` page with detailed marketing content for all 6 product features, mockup UI previews, and anchor navigation
 - **How It Works Section**: 3-step guide on home page (Add Ingredients → Build Recipes → Track Production)
 - **Feature Deep Links**: "Learn more" links on home page feature cards linking to `/features#[section]`

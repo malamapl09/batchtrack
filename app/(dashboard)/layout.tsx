@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { DashboardShell } from '@/components/layout/dashboard-shell';
 import { Toaster } from '@/components/ui/sonner';
+import { PaddleProvider } from '@/components/billing';
 
 export default async function DashboardLayout({
   children,
@@ -43,7 +44,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <>
+    <PaddleProvider>
       <DashboardShell
         organizationName={organization.name}
         user={{
@@ -55,6 +56,6 @@ export default async function DashboardLayout({
         {children}
       </DashboardShell>
       <Toaster />
-    </>
+    </PaddleProvider>
   );
 }
