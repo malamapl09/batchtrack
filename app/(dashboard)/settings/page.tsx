@@ -10,7 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { Upload, CreditCard } from 'lucide-react';
+import { Upload, CreditCard, Users, Download, Sparkles } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export const metadata = {
   title: 'Settings | BatchTrack',
@@ -112,6 +113,33 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
+      {/* Team */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Team
+            {organization?.plan !== 'pro' && (
+              <Badge variant="secondary" className="text-xs">
+                <Sparkles className="mr-1 h-3 w-3" />
+                Pro
+              </Badge>
+            )}
+          </CardTitle>
+          <CardDescription>
+            Manage team members and invitations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild>
+            <Link href="/settings/team">
+              <Users className="mr-2 h-4 w-4" />
+              Manage Team
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Data Import */}
       <Card>
         <CardHeader>
@@ -130,6 +158,39 @@ export default async function SettingsPage() {
               Import Data
             </Link>
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Export Data */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="h-5 w-5" />
+            Export Data
+            {organization?.plan !== 'pro' && (
+              <Badge variant="secondary" className="text-xs">
+                <Sparkles className="mr-1 h-3 w-3" />
+                Pro
+              </Badge>
+            )}
+          </CardTitle>
+          <CardDescription>
+            Export your ingredients and recipes as CSV files
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {organization?.plan === 'pro' ? (
+            <p className="text-sm text-muted-foreground">
+              Use the Export CSV buttons on the Ingredients and Recipes pages to download your data.
+            </p>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/pricing">
+                <Sparkles className="mr-2 h-4 w-4" />
+                Upgrade to Pro
+              </Link>
+            </Button>
+          )}
         </CardContent>
       </Card>
 

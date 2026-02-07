@@ -7,6 +7,7 @@
 import { Resend } from 'resend';
 import { WelcomeEmail } from './templates/welcome';
 import { LowStockAlertEmail } from './templates/low-stock-alert';
+import { TeamInviteEmail } from './templates/team-invite';
 
 // Lazy initialization of Resend client
 let resendClient: Resend | null = null;
@@ -89,6 +90,38 @@ export async function sendLowStockAlert(params: {
     return { success: true, messageId: data?.id };
   } catch (err) {
     console.error('Error sending low stock alert:', err);
+    return { success: false, error: err };
+  }
+}
+
+/**
+ * Send a team invite email
+ */
+export async function sendTeamInviteEmail(params: {
+  to: string;
+  inviterName?: string;
+  organizationName: string;
+  role: string;
+  inviteUrl: string;
+}) {
+  const { to, inviterName, organizationName, role, inviteUrl } = params;
+
+  try {
+    const { data, error } = await getResend().emails.send({
+      from: DEFAULT_FROM,
+      to,
+      subject: `You're invited to join ${organizationName} on BatchTrack`,
+      react: TeamInviteEmail({ inviterName, organizationName, role, inviteUrl }),
+    });
+
+    if (error) {
+      console.error('Failed to send team invite email:', error);
+      return { success: false, error };
+    }
+
+    return { success: true, messageId: data?.id };
+  } catch (err) {
+    console.error('Error sending team invite email:', err);
     return { success: false, error: err };
   }
 }

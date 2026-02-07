@@ -18,6 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { UNIT_LABELS, UNIT_CATEGORIES, DEFAULT_INGREDIENT_CATEGORIES } from '@/lib/constants';
+import { UpgradePromptDialog } from '@/components/billing/upgrade-prompt';
+import type { PlanId } from '@/lib/billing/plans';
 import type { UnitType, Ingredient } from '@/types';
 import type { Tables } from '@/types/database.types';
 
@@ -32,6 +34,12 @@ export function IngredientForm({ ingredient, onSuccess }: IngredientFormProps) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [suppliers, setSuppliers] = useState<Tables<'suppliers'>[]>([]);
+  const [limitDialog, setLimitDialog] = useState<{
+    open: boolean;
+    currentCount: number;
+    limit: number;
+    planId: PlanId;
+  }>({ open: false, currentCount: 0, limit: 0, planId: 'free' });
 
   // Form state
   const [name, setName] = useState(ingredient?.name || '');
@@ -90,7 +98,17 @@ export function IngredientForm({ ingredient, onSuccess }: IngredientFormProps) {
         await updateIngredient(ingredient.id, formData);
         toast.success('Ingredient updated');
       } else {
-        await createIngredient(formData);
+        const result = await createIngredient(formData);
+        if (result && 'error' in result && result.error === 'limit_exceeded') {
+          setLimitDialog({
+            open: true,
+            currentCount: result.currentCount,
+            limit: result.limit,
+            planId: result.planId,
+          });
+          setIsLoading(false);
+          return;
+        }
         toast.success('Ingredient created');
       }
 
@@ -111,6 +129,15 @@ export function IngredientForm({ ingredient, onSuccess }: IngredientFormProps) {
   ];
 
   return (
+    <>
+    <UpgradePromptDialog
+      resource="ingredients"
+      currentCount={limitDialog.currentCount}
+      limit={limitDialog.limit}
+      planId={limitDialog.planId}
+      open={limitDialog.open}
+      onOpenChange={(open) => setLimitDialog((prev) => ({ ...prev, open }))}
+    />
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
       <Card>
@@ -349,5 +376,6 @@ export function IngredientForm({ ingredient, onSuccess }: IngredientFormProps) {
         </Button>
       </div>
     </form>
+    </>
   );
 }

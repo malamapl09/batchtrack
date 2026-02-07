@@ -7,3 +7,4 @@ export { PaddleProvider, usePaddle } from './paddle-provider';
 export { CheckoutButton, UpgradeButton } from './checkout-button';
 export { PricingCards, PricingSection } from './pricing-cards';
 export { UpgradePromptCard, UpgradePromptDialog, LimitWarning } from './upgrade-prompt';
+export { ProFeatureGate } from './pro-feature-gate';

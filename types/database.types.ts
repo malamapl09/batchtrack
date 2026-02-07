@@ -395,6 +395,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      invites: {
+        Row: {
+          id: string;
+          organization_id: string;
+          email: string;
+          role: 'admin' | 'member';
+          invited_by: string;
+          token: string;
+          expires_at: string;
+          accepted_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          email: string;
+          role?: 'admin' | 'member';
+          invited_by: string;
+          token?: string;
+          expires_at?: string;
+          accepted_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          email?: string;
+          role?: 'admin' | 'member';
+          invited_by?: string;
+          token?: string;
+          expires_at?: string;
+          accepted_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       waste_logs: {
         Row: {
           id: string;

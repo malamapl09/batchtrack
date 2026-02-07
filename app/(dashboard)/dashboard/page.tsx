@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency, formatQuantity } from '@/lib/utils/conversions';
 import { UNIT_SHORT_LABELS, BATCH_STATUS_CONFIG } from '@/lib/constants';
+import { LowStockAlertTrigger } from '@/components/dashboard';
 import type { UnitType } from '@/types';
 
 export const metadata = {
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <LowStockAlertTrigger />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>

@@ -5,7 +5,11 @@
 
 import Link from 'next/link';
 import { getIngredients } from '@/lib/actions/ingredients';
+import { exportIngredientsCsv } from '@/lib/actions/export';
+import { checkIngredientLimit, getOrganizationPlan } from '@/lib/billing/check-limits';
 import { IngredientTable } from '@/components/ingredients';
+import { UpgradePromptCard, LimitWarning } from '@/components/billing';
+import { ExportButton } from '@/components/export-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
@@ -21,10 +25,14 @@ interface IngredientsPageProps {
 
 export default async function IngredientsPage({ searchParams }: IngredientsPageProps) {
   const params = await searchParams;
-  const ingredients = await getIngredients({
-    search: params.search,
-    category: params.category,
-  });
+  const [ingredients, limitCheck, planId] = await Promise.all([
+    getIngredients({
+      search: params.search,
+      category: params.category,
+    }),
+    checkIngredientLimit(),
+    getOrganizationPlan(),
+  ]);
 
   // Calculate totals
   const totalValue = ingredients.reduce(
@@ -41,13 +49,34 @@ export default async function IngredientsPage({ searchParams }: IngredientsPageP
           <p className="text-muted-foreground">
             {ingredients.length} items · ${totalValue.toFixed(2)} total value
           </p>
+          {limitCheck.allowed && (
+            <LimitWarning
+              resource="ingredients"
+              remaining={limitCheck.remaining}
+              limit={limitCheck.limit}
+            />
+          )}
         </div>
-        <Button asChild>
-          <Link href="/ingredients/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Ingredient
-          </Link>
-        </Button>
+        {limitCheck.allowed ? (
+          <div className="flex items-center gap-2">
+            {planId === 'pro' && (
+              <ExportButton exportAction={exportIngredientsCsv} label="Export CSV" />
+            )}
+            <Button asChild>
+              <Link href="/ingredients/new">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Ingredient
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <UpgradePromptCard
+            resource="ingredients"
+            currentCount={limitCheck.currentCount}
+            limit={limitCheck.limit}
+            planId={limitCheck.planId}
+          />
+        )}
       </div>
 
       {/* Search */}

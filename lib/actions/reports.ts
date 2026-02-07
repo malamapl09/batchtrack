@@ -6,6 +6,7 @@
  */
 
 import { createClient, getUserWithOrganization } from '@/lib/supabase/server';
+import { getOrganizationPlan } from '@/lib/billing/check-limits';
 
 /**
  * Get ingredient usage over time (last N days)
@@ -279,4 +280,128 @@ export async function getProductionSummary(days: number = 30) {
     averageCost: completedBatches > 0 ? totalCost / completedBatches : 0,
     byRecipe: Object.values(byRecipe).sort((a, b) => b.count - a.count),
   };
+}
+
+/**
+ * Get cost breakdown by ingredient category (Pro only)
+ */
+export async function getCostBreakdownByCategory(days: number = 30) {
+  const supabase = await createClient();
+  const { organization } = await getUserWithOrganization();
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  // Get completed batches
+  const { data: batches, error: batchError } = await supabase
+    .from('batches')
+    .select('id')
+    .eq('organization_id', organization.id)
+    .eq('status', 'completed')
+    .gte('completed_at', startDate.toISOString());
+
+  if (batchError) throw batchError;
+  if (batches.length === 0) return [];
+
+  const batchIds = batches.map((b) => b.id);
+
+  // Get batch ingredients with costs
+  const { data: batchIngredients, error: biError } = await supabase
+    .from('batch_ingredients')
+    .select('ingredient_id, actual_quantity, cost_at_time')
+    .in('batch_id', batchIds);
+
+  if (biError) throw biError;
+
+  // Get ingredient categories
+  const ingredientIds = [...new Set(batchIngredients.map((bi) => bi.ingredient_id))];
+  const { data: ingredients, error: ingError } = await supabase
+    .from('ingredients')
+    .select('id, category')
+    .in('id', ingredientIds);
+
+  if (ingError) throw ingError;
+  const categoryMap = new Map(ingredients.map((i) => [i.id, i.category || 'Uncategorized']));
+
+  // Group by category
+  const byCategory: Record<string, { category: string; cost: number }> = {};
+
+  for (const bi of batchIngredients) {
+    const category = categoryMap.get(bi.ingredient_id) || 'Uncategorized';
+    const cost = bi.actual_quantity * bi.cost_at_time;
+
+    if (!byCategory[category]) {
+      byCategory[category] = { category, cost: 0 };
+    }
+    byCategory[category].cost += cost;
+  }
+
+  return Object.values(byCategory).sort((a, b) => b.cost - a.cost);
+}
+
+/**
+ * Get recipe cost comparison (Pro only)
+ */
+export async function getRecipeCostComparison(days: number = 30) {
+  const supabase = await createClient();
+  const { organization } = await getUserWithOrganization();
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  // Get completed batches with recipe info
+  const { data: batches, error } = await supabase
+    .from('batches')
+    .select('recipe_id, total_cost, multiplier')
+    .eq('organization_id', organization.id)
+    .eq('status', 'completed')
+    .gte('completed_at', startDate.toISOString());
+
+  if (error) throw error;
+  if (batches.length === 0) return [];
+
+  // Get recipe details
+  const recipeIds = [...new Set(batches.map((b) => b.recipe_id))];
+  const { data: recipes, error: recipeError } = await supabase
+    .from('recipes')
+    .select('id, name, yield_quantity, yield_unit')
+    .in('id', recipeIds);
+
+  if (recipeError) throw recipeError;
+  const recipeMap = new Map(recipes.map((r) => [r.id, r]));
+
+  // Calculate avg cost per unit for each recipe
+  const recipeStats: Record<string, {
+    name: string;
+    avgCostPerUnit: number;
+    totalBatches: number;
+    totalCost: number;
+    yieldUnit: string;
+  }> = {};
+
+  for (const batch of batches) {
+    const recipe = recipeMap.get(batch.recipe_id);
+    if (!recipe) continue;
+
+    if (!recipeStats[recipe.id]) {
+      recipeStats[recipe.id] = {
+        name: recipe.name,
+        avgCostPerUnit: 0,
+        totalBatches: 0,
+        totalCost: 0,
+        yieldUnit: recipe.yield_unit,
+      };
+    }
+
+    recipeStats[recipe.id].totalBatches += 1;
+    recipeStats[recipe.id].totalCost += batch.total_cost;
+  }
+
+  // Calculate averages
+  return Object.values(recipeStats)
+    .map((stat) => ({
+      ...stat,
+      avgCostPerUnit: stat.totalCost / stat.totalBatches,
+    }))
+    .sort((a, b) => b.totalCost - a.totalCost);
 }

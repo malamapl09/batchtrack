@@ -11,9 +11,28 @@ All notable changes to BatchTrack.
   - Annual billing with 2 months free discount
   - Webhook handler for subscription lifecycle events
   - Customer billing portal at `/settings/billing`
-- **Plan Limits**: Enforced limits on ingredients, recipes, and users per plan
-  - Upgrade prompts when limits reached
+- **Plan Limit Enforcement**: Server-side limit checks on ingredient/recipe creation
+  - Upgrade prompt dialogs when limits are hit
+  - Limit warnings on list pages when approaching capacity
   - Usage progress bars in billing settings
+- **Supplier Management UI**: Full CRUD pages at `/suppliers`
+  - List with search, detail view with linked ingredients, create/edit forms
+  - Sidebar navigation added for all users
+- **CSV Export** (Pro): Export ingredients and recipes as CSV files
+  - Export buttons on ingredients/recipes list pages
+  - Proper CSV escaping and browser download
+- **Team Management** (Pro): Invite-based team member system at `/settings/team`
+  - Email invitations with 7-day expiry tokens
+  - Role-based access (owner/admin/member)
+  - Invite acceptance flow at `/invite/[token]`
+  - `invites` table with RLS policies
+- **Advanced Analytics** (Pro): New Analytics tab on Reports page
+  - Cost breakdown by ingredient category (pie chart)
+  - Recipe cost comparison (bar chart)
+  - Gated behind `ProFeatureGate` component with blur overlay
+- **Email Triggers**: Welcome email on signup, low stock alerts on dashboard
+  - 24-hour dedup for low stock alerts via localStorage
+  - Team invite email template
 - **Pricing Page**: Dedicated `/pricing` page with plan comparison table and FAQ
 - **Sentry Logging**: Structured logging with `enableLogs` and console integration
   - `lib/sentry` utilities for error capture, spans, and tracing
@@ -21,12 +40,21 @@ All notable changes to BatchTrack.
 ### Changed
 
 - **Pricing UI**: Home page pricing section with monthly/yearly toggle
-- **Database Schema**: Added `subscriptions` table, updated `organizations.plan` to include 'free' tier
-- **Environment Variables**: Updated `.env.local.example` with all required vars (Paddle, Resend, Sentry)
+- **Pricing Table**: Added Supplier Management and Team Management rows
+- **Settings Page**: Added Team, Export Data, and Billing cards with Pro badges
+- **Plan Features**: Updated feature lists in `plans.ts` to reflect all built features
+- **Database Schema**: Added `subscriptions` and `invites` tables, updated `organizations.plan` to include 'free' tier
+
+### Fixed
+
+- **RLS Policy**: Restored `auth.organization_id()` in Paddle migration (was incorrectly changed to non-existent function)
+- **TypeScript Types**: Added `invites` table to `database.types.ts`, fixed Recharts pie chart label type
+- **Organization Type**: Added `'free'` to plan union, replaced Stripe fields with Paddle fields
 
 ### Removed
 
 - **Stripe References**: Replaced with Paddle billing (removed `stripe_customer_id`, `stripe_subscription_id`)
+- **Stale PLAN_LIMITS**: Removed duplicate constant from `types/index.ts` (canonical source is `lib/billing/plans.ts`)
 
 ---
 

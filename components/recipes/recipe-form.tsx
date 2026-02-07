@@ -19,6 +19,8 @@ import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCostPerUnit } from '@/lib/utils/conversions';
 import { UNIT_SHORT_LABELS, DEFAULT_RECIPE_CATEGORIES } from '@/lib/constants';
+import { UpgradePromptDialog } from '@/components/billing/upgrade-prompt';
+import type { PlanId } from '@/lib/billing/plans';
 import type { Tables } from '@/types/database.types';
 import type { UnitType } from '@/types';
 
@@ -45,6 +47,12 @@ export function RecipeForm({ recipe, onSuccess }: RecipeFormProps) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [availableIngredients, setAvailableIngredients] = useState<Tables<'ingredients'>[]>([]);
+  const [limitDialog, setLimitDialog] = useState<{
+    open: boolean;
+    currentCount: number;
+    limit: number;
+    planId: PlanId;
+  }>({ open: false, currentCount: 0, limit: 0, planId: 'free' });
 
   // Form state
   const [name, setName] = useState(recipe?.name || '');
@@ -131,7 +139,17 @@ export function RecipeForm({ recipe, onSuccess }: RecipeFormProps) {
         await updateRecipe(recipe.id, formData);
         toast.success('Recipe updated');
       } else {
-        await createRecipe(formData);
+        const result = await createRecipe(formData);
+        if (result && 'error' in result && result.error === 'limit_exceeded') {
+          setLimitDialog({
+            open: true,
+            currentCount: result.currentCount,
+            limit: result.limit,
+            planId: result.planId,
+          });
+          setIsLoading(false);
+          return;
+        }
         toast.success('Recipe created');
       }
 
@@ -146,6 +164,15 @@ export function RecipeForm({ recipe, onSuccess }: RecipeFormProps) {
   }
 
   return (
+    <>
+    <UpgradePromptDialog
+      resource="recipes"
+      currentCount={limitDialog.currentCount}
+      limit={limitDialog.limit}
+      planId={limitDialog.planId}
+      open={limitDialog.open}
+      onOpenChange={(open) => setLimitDialog((prev) => ({ ...prev, open }))}
+    />
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
       <Card>
@@ -354,5 +381,6 @@ export function RecipeForm({ recipe, onSuccess }: RecipeFormProps) {
         </Button>
       </div>
     </form>
+    </>
   );
 }

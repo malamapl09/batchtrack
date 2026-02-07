@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   Package,
   BookOpen,
+  Truck,
   Factory,
   BarChart3,
   Settings,
@@ -27,6 +28,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Ingredients', href: '/ingredients', icon: Package },
   { name: 'Recipes', href: '/recipes', icon: BookOpen },
+  { name: 'Suppliers', href: '/suppliers', icon: Truck },
   { name: 'Production', href: '/production', icon: Factory },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
 ];

@@ -7,6 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient, getUserWithOrganization } from '@/lib/supabase/server';
+import { checkRecipeLimit } from '@/lib/billing/check-limits';
 import type { RecipeFormData } from '@/types';
 
 /**
@@ -101,6 +102,16 @@ export async function getRecipe(id: string) {
 export async function createRecipe(formData: RecipeFormData) {
   const supabase = await createClient();
   const { organization } = await getUserWithOrganization();
+
+  // Check plan limits before creating
+  const limitCheck = await checkRecipeLimit();
+  if (!limitCheck.allowed) {
+    return {
+      error: 'limit_exceeded' as const,
+      resource: 'recipes' as const,
+      ...limitCheck,
+    };
+  }
 
   // Get ingredient costs for calculation
   const ingredientIds = formData.ingredients.map((i) => i.ingredient_id);

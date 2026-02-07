@@ -5,13 +5,16 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, TrendingUp, Trash2, Factory, DollarSign, CheckCircle, XCircle } from 'lucide-react';
+import { BarChart3, TrendingUp, Trash2, Factory, DollarSign, CheckCircle, XCircle, Sparkles } from 'lucide-react';
 import {
   getIngredientUsageOverTime,
   getCostTrends,
   getWasteAnalytics,
   getProductionSummary,
+  getCostBreakdownByCategory,
+  getRecipeCostComparison,
 } from '@/lib/actions/reports';
+import { getOrganizationPlan } from '@/lib/billing/check-limits';
 import { formatCurrency } from '@/lib/utils/conversions';
 import {
   CostTrendChart,
@@ -19,7 +22,10 @@ import {
   WasteByReasonChart,
   ProductionByRecipeChart,
   WasteOverTimeChart,
+  CostByCategoryChart,
+  RecipeCostComparisonChart,
 } from '@/components/reports/charts';
+import { ProFeatureGate } from '@/components/billing';
 
 export const metadata = {
   title: 'Reports | BatchTrack',
@@ -27,12 +33,21 @@ export const metadata = {
 };
 
 export default async function ReportsPage() {
-  const [usageData, costData, wasteData, productionData] = await Promise.all([
+  const [usageData, costData, wasteData, productionData, planId] = await Promise.all([
     getIngredientUsageOverTime(30),
     getCostTrends(30),
     getWasteAnalytics(30),
     getProductionSummary(30),
+    getOrganizationPlan(),
   ]);
+
+  // Fetch Pro-only data if on Pro plan
+  const [categoryData, recipeCostData] = planId === 'pro'
+    ? await Promise.all([
+        getCostBreakdownByCategory(30),
+        getRecipeCostComparison(30),
+      ])
+    : [[], []];
 
   const totalProductionCost = costData.reduce((sum, d) => sum + d.cost, 0);
   const totalBatches = costData.reduce((sum, d) => sum + d.batches, 0);
@@ -106,6 +121,10 @@ export default async function ReportsPage() {
           <TabsTrigger value="usage" className="flex-1 sm:flex-none">Usage</TabsTrigger>
           <TabsTrigger value="waste" className="flex-1 sm:flex-none">Waste</TabsTrigger>
           <TabsTrigger value="production" className="flex-1 sm:flex-none">Production</TabsTrigger>
+          <TabsTrigger value="analytics" className="flex-1 sm:flex-none">
+            <Sparkles className="mr-1 h-3 w-3" />
+            Analytics
+          </TabsTrigger>
         </TabsList>
 
         {/* Cost Trends Tab */}
@@ -282,6 +301,55 @@ export default async function ReportsPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Analytics Tab (Pro) */}
+        <TabsContent value="analytics" className="space-y-4">
+          <ProFeatureGate planId={planId}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-amber-500" />
+                    Cost by Category
+                  </CardTitle>
+                  <CardDescription>
+                    Production cost breakdown by ingredient category
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {categoryData.length > 0 ? (
+                    <CostByCategoryChart data={categoryData} />
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-lg">
+                      <p className="text-muted-foreground">No data available</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-amber-500" />
+                    Recipe Cost Comparison
+                  </CardTitle>
+                  <CardDescription>
+                    Average cost per batch for each recipe
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {recipeCostData.length > 0 ? (
+                    <RecipeCostComparisonChart data={recipeCostData} />
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center bg-muted/50 rounded-lg">
+                      <p className="text-muted-foreground">No data available</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </ProFeatureGate>
         </TabsContent>
       </Tabs>
     </div>

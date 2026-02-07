@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { triggerWelcomeEmail } from '@/lib/actions/email';
 import { slugify } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,7 +55,7 @@ export function OnboardingForm({ userId, userEmail }: OnboardingFormProps) {
       .insert({
         name: organizationName,
         slug: uniqueSlug,
-        plan: 'starter' as const,
+        plan: 'free' as const,
       })
       .select()
       .single();
@@ -82,6 +83,9 @@ export function OnboardingForm({ userId, userEmail }: OnboardingFormProps) {
       setIsLoading(false);
       return;
     }
+
+    // Fire and forget welcome email
+    triggerWelcomeEmail(userEmail, organizationName);
 
     // Success - redirect to dashboard
     router.push('/dashboard');

@@ -149,6 +149,18 @@ export default function PricingPage() {
                   </td>
                 </tr>
                 <tr>
+                  <td className="py-4 px-4">Supplier Management</td>
+                  <td className="text-center py-4 px-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-4 bg-primary/5">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
                   <td className="py-4 px-4">Low Stock Alerts</td>
                   <td className="text-center py-4 px-4 text-muted-foreground">—</td>
                   <td className="text-center py-4 px-4">
@@ -187,9 +199,17 @@ export default function PricingPage() {
                   </td>
                 </tr>
                 <tr>
+                  <td className="py-4 px-4">Team Management</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
+                  <td className="text-center py-4 px-4 bg-primary/5">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
                   <td className="py-4 px-4">Priority Support</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">—</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">—</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
                   <td className="text-center py-4 px-4 bg-primary/5">
                     <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </td>

@@ -11,9 +11,8 @@ export interface Organization {
   id: string;
   name: string;
   slug: string;
-  plan: 'starter' | 'pro';
-  stripe_customer_id: string | null;
-  stripe_subscription_id: string | null;
+  plan: 'free' | 'starter' | 'pro';
+  paddle_customer_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -236,19 +235,3 @@ export interface TopIngredient {
   usageUnit: UnitType;
 }
 
-// =============================================================================
-// Plan Limits
-// =============================================================================
-
-export const PLAN_LIMITS = {
-  starter: {
-    ingredients: 50,
-    recipes: 10,
-    users: 1,
-  },
-  pro: {
-    ingredients: Infinity,
-    recipes: Infinity,
-    users: Infinity,
-  },
-} as const;

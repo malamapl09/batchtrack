@@ -8,6 +8,7 @@
 import { revalidatePath } from 'next/cache';
 import { createClient, getUserWithOrganization } from '@/lib/supabase/server';
 import { calculateCostPerUsageUnit, purchaseToStock } from '@/lib/utils/conversions';
+import { checkIngredientLimit } from '@/lib/billing/check-limits';
 import type { IngredientFormData } from '@/types';
 
 /**
@@ -104,6 +105,16 @@ export async function getIngredient(id: string) {
 export async function createIngredient(formData: IngredientFormData) {
   const supabase = await createClient();
   const { organization } = await getUserWithOrganization();
+
+  // Check plan limits before creating
+  const limitCheck = await checkIngredientLimit();
+  if (!limitCheck.allowed) {
+    return {
+      error: 'limit_exceeded' as const,
+      resource: 'ingredients' as const,
+      ...limitCheck,
+    };
+  }
 
   const { data, error } = await supabase
     .from('ingredients')

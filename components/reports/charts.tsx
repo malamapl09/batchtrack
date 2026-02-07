@@ -298,6 +298,84 @@ export function WasteOverTimeChart({ data }: { data: UsageData[] }) {
 }
 
 /**
+ * Cost by Category Pie Chart (Pro)
+ */
+export function CostByCategoryChart({ data }: { data: { category: string; cost: number }[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          label={({ name, percent }) => `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`}
+          outerRadius={100}
+          fill="#8884d8"
+          dataKey="cost"
+          nameKey="category"
+        >
+          {data.map((_, index) => (
+            <Cell key={`cell-${index}`} fill={FALLBACK_COLORS[index % FALLBACK_COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip
+          formatter={(value) => [formatCurrency(Number(value)), 'Cost']}
+          contentStyle={{
+            backgroundColor: 'hsl(var(--popover))',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: '6px',
+          }}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+}
+
+/**
+ * Recipe Cost Comparison Bar Chart (Pro)
+ */
+export function RecipeCostComparisonChart({
+  data,
+}: {
+  data: { name: string; avgCostPerUnit: number; totalBatches: number; totalCost: number; yieldUnit: string }[];
+}) {
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={data} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+        <XAxis
+          type="number"
+          tickFormatter={(v) => `$${v}`}
+          tick={{ fontSize: 12 }}
+          className="text-muted-foreground"
+        />
+        <YAxis
+          dataKey="name"
+          type="category"
+          tick={{ fontSize: 12 }}
+          width={75}
+          className="text-muted-foreground"
+        />
+        <Tooltip
+          formatter={(value, name) => [
+            name === 'totalCost' ? formatCurrency(Number(value)) : formatCurrency(Number(value)),
+            name === 'totalCost' ? 'Total Cost' : 'Avg Cost/Batch',
+          ]}
+          contentStyle={{
+            backgroundColor: 'hsl(var(--popover))',
+            border: '1px solid hsl(var(--border))',
+            borderRadius: '6px',
+          }}
+        />
+        <Legend />
+        <Bar dataKey="avgCostPerUnit" name="Avg Cost/Batch" fill={FALLBACK_COLORS[1]} radius={[0, 4, 4, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+/**
  * Ingredient Cost History Line Chart
  * Shows purchase cost changes over time for an ingredient
  */

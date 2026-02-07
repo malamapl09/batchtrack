@@ -81,6 +81,7 @@ export async function createSupplier(formData: SupplierFormData) {
   if (error) throw error;
 
   revalidatePath('/ingredients');
+  revalidatePath('/suppliers');
   return data;
 }
 
@@ -108,6 +109,8 @@ export async function updateSupplier(id: string, formData: Partial<SupplierFormD
   if (error) throw error;
 
   revalidatePath('/ingredients');
+  revalidatePath('/suppliers');
+  revalidatePath(`/suppliers/${id}`);
   return data;
 }
 
@@ -126,4 +129,5 @@ export async function deleteSupplier(id: string) {
   if (error) throw error;
 
   revalidatePath('/ingredients');
+  revalidatePath('/suppliers');
 }

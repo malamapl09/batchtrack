@@ -5,7 +5,11 @@
 
 import Link from 'next/link';
 import { getRecipes } from '@/lib/actions/recipes';
+import { exportRecipesCsv } from '@/lib/actions/export';
+import { checkRecipeLimit, getOrganizationPlan } from '@/lib/billing/check-limits';
 import { RecipeTable } from '@/components/recipes';
+import { UpgradePromptCard, LimitWarning } from '@/components/billing';
+import { ExportButton } from '@/components/export-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
@@ -21,10 +25,14 @@ interface RecipesPageProps {
 
 export default async function RecipesPage({ searchParams }: RecipesPageProps) {
   const params = await searchParams;
-  const recipes = await getRecipes({
-    search: params.search,
-    category: params.category,
-  });
+  const [recipes, limitCheck, planId] = await Promise.all([
+    getRecipes({
+      search: params.search,
+      category: params.category,
+    }),
+    checkRecipeLimit(),
+    getOrganizationPlan(),
+  ]);
 
   // Calculate totals
   const activeRecipes = recipes.filter((r) => r.is_active).length;
@@ -38,13 +46,34 @@ export default async function RecipesPage({ searchParams }: RecipesPageProps) {
           <p className="text-muted-foreground">
             {recipes.length} recipes · {activeRecipes} active
           </p>
+          {limitCheck.allowed && (
+            <LimitWarning
+              resource="recipes"
+              remaining={limitCheck.remaining}
+              limit={limitCheck.limit}
+            />
+          )}
         </div>
-        <Button asChild>
-          <Link href="/recipes/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Recipe
-          </Link>
-        </Button>
+        {limitCheck.allowed ? (
+          <div className="flex items-center gap-2">
+            {planId === 'pro' && (
+              <ExportButton exportAction={exportRecipesCsv} label="Export CSV" />
+            )}
+            <Button asChild>
+              <Link href="/recipes/new">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Recipe
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <UpgradePromptCard
+            resource="recipes"
+            currentCount={limitCheck.currentCount}
+            limit={limitCheck.limit}
+            planId={limitCheck.planId}
+          />
+        )}
       </div>
 
       {/* Search */}
