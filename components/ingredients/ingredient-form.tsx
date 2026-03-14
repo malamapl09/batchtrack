@@ -91,7 +91,7 @@ export function IngredientForm({ ingredient, onSuccess }: IngredientFormProps) {
         cost_per_unit: parseFloat(costPerUnit),
         stock_quantity: parseFloat(stockQuantity),
         low_stock_threshold: lowStockThreshold ? parseFloat(lowStockThreshold) : undefined,
-        supplier_id: supplierId || undefined,
+        supplier_id: supplierId && supplierId !== 'none' ? supplierId : undefined,
       };
 
       if (isEditing) {
@@ -205,7 +205,7 @@ export function IngredientForm({ ingredient, onSuccess }: IngredientFormProps) {
                   <SelectValue placeholder="Select supplier" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No supplier</SelectItem>
+                  <SelectItem value="none">No supplier</SelectItem>
                   {suppliers.map((supplier) => (
                     <SelectItem key={supplier.id} value={supplier.id}>
                       {supplier.name}
