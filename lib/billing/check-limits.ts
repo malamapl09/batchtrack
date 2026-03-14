@@ -15,14 +15,14 @@ export interface LimitCheckResult {
 }
 
 /**
- * Get the current organization's plan
+ * Get the current organization's plan and ID
  */
-export async function getOrganizationPlan(): Promise<PlanId> {
+export async function getOrganizationPlanAndId(): Promise<{ planId: PlanId; organizationId: string | null }> {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return 'free';
+    return { planId: 'free', organizationId: null };
   }
 
   const { data: userData } = await supabase
@@ -32,7 +32,7 @@ export async function getOrganizationPlan(): Promise<PlanId> {
     .single();
 
   if (!userData?.organization_id) {
-    return 'free';
+    return { planId: 'free', organizationId: null };
   }
 
   const { data: org } = await supabase
@@ -41,7 +41,18 @@ export async function getOrganizationPlan(): Promise<PlanId> {
     .eq('id', userData.organization_id)
     .single();
 
-  return (org?.plan as PlanId) || 'free';
+  return {
+    planId: (org?.plan as PlanId) || 'free',
+    organizationId: userData.organization_id,
+  };
+}
+
+/**
+ * Get the current organization's plan
+ */
+export async function getOrganizationPlan(): Promise<PlanId> {
+  const { planId } = await getOrganizationPlanAndId();
+  return planId;
 }
 
 /**
@@ -49,12 +60,17 @@ export async function getOrganizationPlan(): Promise<PlanId> {
  */
 export async function checkIngredientLimit(): Promise<LimitCheckResult> {
   const supabase = await createClient();
-  const planId = await getOrganizationPlan();
+  const { planId, organizationId } = await getOrganizationPlanAndId();
   const plan = PLANS[planId];
+
+  if (!organizationId) {
+    return { allowed: false, currentCount: 0, limit: 0, remaining: 0, planId };
+  }
 
   const { count } = await supabase
     .from('ingredients')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .eq('organization_id', organizationId);
 
   const currentCount = count || 0;
   const limit = plan.limits.ingredients;
@@ -74,12 +90,17 @@ export async function checkIngredientLimit(): Promise<LimitCheckResult> {
  */
 export async function checkRecipeLimit(): Promise<LimitCheckResult> {
   const supabase = await createClient();
-  const planId = await getOrganizationPlan();
+  const { planId, organizationId } = await getOrganizationPlanAndId();
   const plan = PLANS[planId];
+
+  if (!organizationId) {
+    return { allowed: false, currentCount: 0, limit: 0, remaining: 0, planId };
+  }
 
   const { count } = await supabase
     .from('recipes')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .eq('organization_id', organizationId);
 
   const currentCount = count || 0;
   const limit = plan.limits.recipes;

@@ -38,11 +38,20 @@ export async function getIngredients(options?: {
   }
 
   if (options?.lowStockOnly) {
-    query = query.lte('stock_quantity', 'low_stock_threshold');
+    // PostgREST can't compare columns directly, so filter client-side
+    query = query.not('low_stock_threshold', 'is', null);
   }
 
-  const { data: ingredients, error } = await query;
+  const { data: ingredientsData, error } = await query;
   if (error) throw error;
+
+  // Column-to-column comparison must be done client-side
+  let ingredients = ingredientsData ?? [];
+  if (options?.lowStockOnly) {
+    ingredients = ingredients.filter(
+      (i) => i.low_stock_threshold != null && i.stock_quantity <= i.low_stock_threshold
+    );
+  }
 
   // Fetch suppliers for ingredients that have one
   const supplierIds = [...new Set(ingredients.filter(i => i.supplier_id).map(i => i.supplier_id!))];
@@ -308,11 +317,14 @@ export async function getLowStockIngredients() {
     .select('*')
     .eq('organization_id', organization.id)
     .not('low_stock_threshold', 'is', null)
-    .filter('stock_quantity', 'lte', 'low_stock_threshold')
     .order('stock_quantity');
 
   if (error) throw error;
-  return data;
+
+  // Column-to-column comparison must be done client-side
+  return data.filter(
+    (i) => i.low_stock_threshold != null && i.stock_quantity <= i.low_stock_threshold
+  );
 }
 
 /**

@@ -74,16 +74,14 @@ async function handleSubscriptionCreated(data: any) {
 
   const organizationId = custom_data?.organizationId;
   if (!organizationId) {
-    console.error('No organizationId in custom_data');
-    return;
+    throw new Error('No organizationId in custom_data');
   }
 
   const priceId = items?.[0]?.price?.id;
   const planId = mapPaddlePlanToId(priceId);
 
   if (!planId) {
-    console.error('Unknown price ID:', priceId);
-    return;
+    throw new Error(`Unknown price ID: ${priceId}`);
   }
 
   const supabase = getSupabaseAdmin();
@@ -104,8 +102,7 @@ async function handleSubscriptionCreated(data: any) {
     });
 
   if (subscriptionError) {
-    console.error('Error upserting subscription:', subscriptionError);
-    return;
+    throw new Error(`Error upserting subscription: ${subscriptionError.message}`);
   }
 
   // Update organization plan
@@ -115,7 +112,7 @@ async function handleSubscriptionCreated(data: any) {
     .eq('id', organizationId);
 
   if (orgError) {
-    console.error('Error updating organization plan:', orgError);
+    throw new Error(`Error updating organization plan: ${orgError.message}`);
   }
 
   console.log(`Subscription created: ${subscriptionId} for org ${organizationId}, plan: ${planId}`);
@@ -140,8 +137,7 @@ async function handleSubscriptionUpdated(data: any) {
     .single();
 
   if (!subscription) {
-    console.error('Subscription not found:', subscriptionId);
-    return;
+    throw new Error(`Subscription not found: ${subscriptionId}`);
   }
 
   // Update subscription record
@@ -158,8 +154,7 @@ async function handleSubscriptionUpdated(data: any) {
     .eq('paddle_subscription_id', subscriptionId);
 
   if (subscriptionError) {
-    console.error('Error updating subscription:', subscriptionError);
-    return;
+    throw new Error(`Error updating subscription: ${subscriptionError.message}`);
   }
 
   // Update organization plan if changed
@@ -170,7 +165,7 @@ async function handleSubscriptionUpdated(data: any) {
       .eq('id', subscription.organization_id);
 
     if (orgError) {
-      console.error('Error updating organization plan:', orgError);
+      throw new Error(`Error updating organization plan: ${orgError.message}`);
     }
   }
 
@@ -193,8 +188,7 @@ async function handleSubscriptionCanceled(data: any) {
     .single();
 
   if (!subscription) {
-    console.error('Subscription not found:', subscriptionId);
-    return;
+    throw new Error(`Subscription not found: ${subscriptionId}`);
   }
 
   // Update subscription status
@@ -207,8 +201,7 @@ async function handleSubscriptionCanceled(data: any) {
     .eq('paddle_subscription_id', subscriptionId);
 
   if (subscriptionError) {
-    console.error('Error updating subscription:', subscriptionError);
-    return;
+    throw new Error(`Error updating subscription: ${subscriptionError.message}`);
   }
 
   // Downgrade organization to free plan
@@ -218,7 +211,7 @@ async function handleSubscriptionCanceled(data: any) {
     .eq('id', subscription.organization_id);
 
   if (orgError) {
-    console.error('Error downgrading organization:', orgError);
+    throw new Error(`Error downgrading organization: ${orgError.message}`);
   }
 
   console.log(`Subscription canceled: ${subscriptionId}`);
@@ -241,7 +234,7 @@ async function handleSubscriptionPastDue(data: any) {
     .eq('paddle_subscription_id', subscriptionId);
 
   if (error) {
-    console.error('Error updating subscription to past_due:', error);
+    throw new Error(`Error updating subscription to past_due: ${error.message}`);
   }
 
   console.log(`Subscription past due: ${subscriptionId}`);

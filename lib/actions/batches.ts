@@ -332,6 +332,7 @@ export async function updateBatchIngredientQuantity(
 
 /**
  * Internal: Decrement inventory when batch starts
+ * Validates all stock levels before making any changes to avoid partial updates
  */
 async function decrementInventoryForBatch(batchId: string) {
   const supabase = await createClient();
@@ -344,22 +345,48 @@ async function decrementInventoryForBatch(batchId: string) {
 
   if (error) throw error;
 
-  // Decrement each ingredient
+  // Fetch all ingredient stock levels first
+  const ingredientIds = batchIngredients.map((bi) => bi.ingredient_id);
+  const { data: ingredients, error: ingError } = await supabase
+    .from('ingredients')
+    .select('id, name, stock_quantity')
+    .in('id', ingredientIds);
+
+  if (ingError) throw ingError;
+
+  const ingredientMap = new Map(ingredients.map((i) => [i.id, i]));
+
+  // Validate all stock levels before making any changes
+  const insufficientStock: string[] = [];
   for (const bi of batchIngredients) {
-    const { data: ingredient, error: ingError } = await supabase
-      .from('ingredients')
-      .select('stock_quantity')
-      .eq('id', bi.ingredient_id)
-      .single();
+    const ingredient = ingredientMap.get(bi.ingredient_id);
+    if (!ingredient) {
+      throw new Error(`Ingredient ${bi.ingredient_id} not found`);
+    }
+    if (ingredient.stock_quantity < bi.actual_quantity) {
+      insufficientStock.push(
+        `${ingredient.name}: need ${bi.actual_quantity}, have ${ingredient.stock_quantity}`
+      );
+    }
+  }
 
-    if (ingError) continue;
+  if (insufficientStock.length > 0) {
+    throw new Error(`Insufficient stock: ${insufficientStock.join('; ')}`);
+  }
 
-    const newQuantity = Math.max(0, ingredient.stock_quantity - bi.actual_quantity);
+  // Now decrement all — all validated, so partial failure is less likely
+  for (const bi of batchIngredients) {
+    const ingredient = ingredientMap.get(bi.ingredient_id)!;
+    const newQuantity = ingredient.stock_quantity - bi.actual_quantity;
 
-    await supabase
+    const { error: updateError } = await supabase
       .from('ingredients')
       .update({ stock_quantity: newQuantity })
       .eq('id', bi.ingredient_id);
+
+    if (updateError) {
+      throw new Error(`Failed to update stock for ${ingredient.name}: ${updateError.message}`);
+    }
   }
 }
 

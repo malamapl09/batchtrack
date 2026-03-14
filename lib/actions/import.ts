@@ -37,28 +37,59 @@ export interface RecipeImportRow {
 
 /**
  * Parse CSV string into rows
+ * Handles quoted fields, escaped quotes (""), commas inside quotes, and multiline values
  */
 function parseCSV(csv: string): string[][] {
-  const lines = csv.trim().split('\n');
-  return lines.map((line) => {
-    const result: string[] = [];
-    let current = '';
-    let inQuotes = false;
+  const rows: string[][] = [];
+  let current = '';
+  let inQuotes = false;
+  let row: string[] = [];
 
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
+  for (let i = 0; i < csv.length; i++) {
+    const char = csv[i];
+
+    if (inQuotes) {
       if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        result.push(current.trim());
+        // Check for escaped quote ("")
+        if (i + 1 < csv.length && csv[i + 1] === '"') {
+          current += '"';
+          i++; // Skip next quote
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += char;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        row.push(current.trim());
+        current = '';
+      } else if (char === '\n' || char === '\r') {
+        // Handle \r\n
+        if (char === '\r' && i + 1 < csv.length && csv[i + 1] === '\n') {
+          i++;
+        }
+        row.push(current.trim());
+        if (row.some((cell) => cell !== '')) {
+          rows.push(row);
+        }
+        row = [];
         current = '';
       } else {
         current += char;
       }
     }
-    result.push(current.trim());
-    return result;
-  });
+  }
+
+  // Push last field and row
+  row.push(current.trim());
+  if (row.some((cell) => cell !== '')) {
+    rows.push(row);
+  }
+
+  return rows;
 }
 
 /**
