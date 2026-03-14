@@ -52,10 +52,11 @@ function verifyWebhookSignature(
  * Map Paddle plan to our plan IDs
  */
 function mapPaddlePlanToId(priceId: string): 'starter' | 'pro' | null {
-  const starterMonthly = process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY;
-  const starterYearly = process.env.NEXT_PUBLIC_PADDLE_STARTER_YEARLY;
-  const proMonthly = process.env.NEXT_PUBLIC_PADDLE_PRO_MONTHLY;
-  const proYearly = process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY;
+  // Use server-side env vars (PADDLE_*) with NEXT_PUBLIC_ fallback
+  const starterMonthly = process.env.PADDLE_STARTER_MONTHLY || process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY;
+  const starterYearly = process.env.PADDLE_STARTER_YEARLY || process.env.NEXT_PUBLIC_PADDLE_STARTER_YEARLY;
+  const proMonthly = process.env.PADDLE_PRO_MONTHLY || process.env.NEXT_PUBLIC_PADDLE_PRO_MONTHLY;
+  const proYearly = process.env.PADDLE_PRO_YEARLY || process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY;
 
   if (priceId === starterMonthly || priceId === starterYearly) {
     return 'starter';
