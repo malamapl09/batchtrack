@@ -38,17 +38,25 @@ export async function checkAndSendLowStockAlert(): Promise<boolean> {
     const supabase = await createClient();
     const { user, organization } = await getUserWithOrganization();
 
-    // Fetch low stock items
-    const { data: lowStockItems, error } = await supabase
+    // Fetch ingredients with thresholds set
+    const { data: ingredientsWithThresholds, error } = await supabase
       .from('ingredients')
       .select('name, stock_quantity, low_stock_threshold, usage_unit')
       .eq('organization_id', organization.id)
       .not('low_stock_threshold', 'is', null)
-      .filter('stock_quantity', 'lte', 'low_stock_threshold')
       .order('stock_quantity')
-      .limit(10);
+      .limit(50);
 
-    if (error || !lowStockItems || lowStockItems.length === 0) {
+    if (error || !ingredientsWithThresholds) {
+      return false;
+    }
+
+    // Column-to-column comparison must be done client-side
+    const lowStockItems = ingredientsWithThresholds.filter(
+      (i) => i.low_stock_threshold != null && i.stock_quantity <= i.low_stock_threshold
+    );
+
+    if (lowStockItems.length === 0) {
       return false;
     }
 

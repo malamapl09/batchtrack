@@ -149,10 +149,20 @@ export default function PricingPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-4 px-4">Supplier Management</td>
+                  <td className="py-4 px-4">Basic Reports</td>
                   <td className="text-center py-4 px-4">
                     <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </td>
+                  <td className="text-center py-4 px-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center py-4 px-4 bg-primary/5">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-4 px-4">Supplier Management</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">—</td>
                   <td className="text-center py-4 px-4">
                     <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </td>
@@ -171,10 +181,8 @@ export default function PricingPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-4 px-4">Basic Reports</td>
-                  <td className="text-center py-4 px-4">
-                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
-                  </td>
+                  <td className="py-4 px-4">CSV Import</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">—</td>
                   <td className="text-center py-4 px-4">
                     <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </td>
@@ -191,7 +199,7 @@ export default function PricingPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="py-4 px-4">CSV Import/Export</td>
+                  <td className="py-4 px-4">CSV Export</td>
                   <td className="text-center py-4 px-4 text-muted-foreground">—</td>
                   <td className="text-center py-4 px-4 text-muted-foreground">—</td>
                   <td className="text-center py-4 px-4 bg-primary/5">
@@ -200,16 +208,8 @@ export default function PricingPage() {
                 </tr>
                 <tr>
                   <td className="py-4 px-4">Team Management</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
-                  <td className="text-center py-4 px-4 bg-primary/5">
-                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-4 px-4">Priority Support</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">--</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">—</td>
+                  <td className="text-center py-4 px-4 text-muted-foreground">—</td>
                   <td className="text-center py-4 px-4 bg-primary/5">
                     <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
                   </td>

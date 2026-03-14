@@ -1,6 +1,6 @@
 /**
  * Suppliers List Page
- * Displays all suppliers with search
+ * Displays all suppliers with search (Starter+ only)
  */
 
 import Link from 'next/link';
@@ -9,6 +9,8 @@ import { SupplierTable } from '@/components/suppliers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
+import { getOrganizationPlan } from '@/lib/billing/check-limits';
+import { UpgradePromptCard } from '@/components/billing/upgrade-prompt';
 
 export const metadata = {
   title: 'Suppliers | BatchTrack',
@@ -20,6 +22,27 @@ interface SuppliersPageProps {
 }
 
 export default async function SuppliersPage({ searchParams }: SuppliersPageProps) {
+  const planId = await getOrganizationPlan();
+
+  if (planId === 'free') {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold">Suppliers</h1>
+          <p className="text-muted-foreground">
+            Manage your ingredient suppliers
+          </p>
+        </div>
+        <UpgradePromptCard
+          resource="ingredients"
+          currentCount={0}
+          limit={0}
+          planId={planId}
+        />
+      </div>
+    );
+  }
+
   const params = await searchParams;
   const suppliers = await getSuppliers(params.search);
 

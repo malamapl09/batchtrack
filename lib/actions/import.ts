@@ -7,6 +7,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient, getUserWithOrganization } from '@/lib/supabase/server';
+import { getOrganizationPlan } from '@/lib/billing/check-limits';
 
 export interface ImportResult {
   success: boolean;
@@ -120,6 +121,11 @@ function validateIngredientRow(row: Record<string, string>, rowNum: number): str
  * Import ingredients from CSV
  */
 export async function importIngredients(csvContent: string): Promise<ImportResult> {
+  const planId = await getOrganizationPlan();
+  if (planId === 'free') {
+    return { success: false, imported: 0, errors: [{ row: 0, message: 'CSV import is available on Starter and Pro plans.' }] };
+  }
+
   const supabase = await createClient();
   const { organization } = await getUserWithOrganization();
 
@@ -220,6 +226,11 @@ function validateRecipeRow(row: Record<string, string>, rowNum: number): string 
  * Import recipes from CSV (basic recipe info only, ingredients added separately)
  */
 export async function importRecipes(csvContent: string): Promise<ImportResult> {
+  const planId = await getOrganizationPlan();
+  if (planId === 'free') {
+    return { success: false, imported: 0, errors: [{ row: 0, message: 'CSV import is available on Starter and Pro plans.' }] };
+  }
+
   const supabase = await createClient();
   const { organization } = await getUserWithOrganization();
 
