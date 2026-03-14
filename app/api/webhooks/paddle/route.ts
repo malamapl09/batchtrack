@@ -249,8 +249,9 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('paddle-signature');
     const webhookSecret = process.env.PADDLE_WEBHOOK_SECRET;
 
-    // Verify signature in production
-    if (process.env.NODE_ENV === 'production') {
+    // Verify signature (skip in sandbox mode for testing)
+    const paddleEnvironment = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production';
+    if (paddleEnvironment === 'production') {
       if (!signature || !webhookSecret) {
         return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
       }
