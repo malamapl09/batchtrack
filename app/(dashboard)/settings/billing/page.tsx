@@ -132,7 +132,7 @@ export default async function BillingPage() {
             </div>
             {usage.planId !== 'pro' && (
               <Button asChild>
-                <Link href="/pricing">
+                <Link href="/settings/upgrade">
                   Upgrade Plan
                   <ArrowUpRight className="ml-1 h-4 w-4" />
                 </Link>

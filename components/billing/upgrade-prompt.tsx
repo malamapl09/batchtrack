@@ -57,7 +57,7 @@ export function UpgradePromptCard({
       </CardHeader>
       <CardContent className="pt-2">
         <Button asChild className="w-full">
-          <Link href="/pricing">
+          <Link href="/settings/upgrade">
             <Sparkles className="mr-2 h-4 w-4" />
             Upgrade to {nextPlan.name} for{' '}
             {nextPlan.limits[resource] === Infinity
@@ -131,7 +131,7 @@ export function UpgradePromptDialog({
               Maybe Later
             </Button>
             <Button asChild className="flex-1">
-              <Link href="/pricing">View Plans</Link>
+              <Link href="/settings/upgrade">View Plans</Link>
             </Button>
           </div>
         </div>
@@ -163,7 +163,7 @@ export function LimitWarning({
         ? `No ${resource} remaining on your plan.`
         : `Only ${remaining} ${resourceLabel}${remaining !== 1 ? 's' : ''} remaining on your plan.`}
       {' '}
-      <Link href="/pricing" className="underline hover:no-underline">
+      <Link href="/settings/upgrade" className="underline hover:no-underline">
         Upgrade
       </Link>
     </p>
