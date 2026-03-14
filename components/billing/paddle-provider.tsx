@@ -58,7 +58,7 @@ export function PaddleProvider({ children }: PaddleProviderProps) {
 
     initializePaddle({
       token: clientToken,
-      environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
+      environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'production' ? 'production' : 'sandbox',
       eventCallback: (event) => {
         // Handle Paddle events
         switch (event.name) {
