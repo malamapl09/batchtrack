@@ -86,11 +86,10 @@ async function handleSubscriptionCreated(data: any) {
 
   const supabase = getSupabaseAdmin();
 
-  // Upsert subscription record
+  // Upsert subscription record (keyed on paddle_subscription_id, not id)
   const { error: subscriptionError } = await supabase
     .from('subscriptions')
     .upsert({
-      id: subscriptionId,
       organization_id: organizationId,
       paddle_customer_id: customer_id,
       paddle_subscription_id: subscriptionId,
@@ -99,7 +98,7 @@ async function handleSubscriptionCreated(data: any) {
       current_period_start: current_billing_period?.starts_at,
       current_period_end: current_billing_period?.ends_at,
       updated_at: new Date().toISOString(),
-    });
+    }, { onConflict: 'paddle_subscription_id' });
 
   if (subscriptionError) {
     throw new Error(`Error upserting subscription: ${subscriptionError.message}`);
