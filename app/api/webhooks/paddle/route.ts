@@ -51,30 +51,20 @@ function verifyWebhookSignature(
 /**
  * Map Paddle plan to our plan IDs
  */
+/**
+ * Map Paddle price ID to internal plan ID
+ * Uses a static mapping since env vars may not be available at runtime
+ */
+const PRICE_TO_PLAN: Record<string, 'starter' | 'pro'> = {
+  // Sandbox price IDs
+  'pri_01kkpfr1fcjxwfce07eezyym7e': 'starter', // Starter Monthly
+  'pri_01kkpfr3vvx600cxz96ms26c1w': 'starter', // Starter Yearly
+  'pri_01kkpfrfwvacnwbc6rsq22eghm': 'pro',     // Pro Monthly
+  'pri_01kkpfrj78kbesbxbsrq00qny5': 'pro',     // Pro Yearly
+};
+
 function mapPaddlePlanToId(priceId: string): 'starter' | 'pro' | null {
-  // Use server-side env vars (PADDLE_*) with NEXT_PUBLIC_ fallback
-  const starterMonthly = process.env.PADDLE_STARTER_MONTHLY || process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY;
-  const starterYearly = process.env.PADDLE_STARTER_YEARLY || process.env.NEXT_PUBLIC_PADDLE_STARTER_YEARLY;
-  const proMonthly = process.env.PADDLE_PRO_MONTHLY || process.env.NEXT_PUBLIC_PADDLE_PRO_MONTHLY;
-  const proYearly = process.env.PADDLE_PRO_YEARLY || process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY;
-
-  console.log('Price ID mapping debug:', {
-    input: priceId,
-    starterMonthly,
-    starterYearly,
-    proMonthly,
-    proYearly,
-    rawPaddle: process.env.PADDLE_STARTER_MONTHLY,
-    rawNextPublic: process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY,
-  });
-
-  if (priceId === starterMonthly || priceId === starterYearly) {
-    return 'starter';
-  }
-  if (priceId === proMonthly || priceId === proYearly) {
-    return 'pro';
-  }
-  return null;
+  return PRICE_TO_PLAN[priceId] || null;
 }
 
 /**
