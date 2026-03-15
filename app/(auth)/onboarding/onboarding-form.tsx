@@ -6,7 +6,6 @@
  */
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { triggerWelcomeEmail } from '@/lib/actions/email';
 import { slugify } from '@/lib/utils';
@@ -31,8 +30,6 @@ const BUSINESS_TYPES = [
 ] as const;
 
 export function OnboardingForm({ userId, userEmail }: OnboardingFormProps) {
-  const router = useRouter();
-
   const [organizationName, setOrganizationName] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -87,9 +84,8 @@ export function OnboardingForm({ userId, userEmail }: OnboardingFormProps) {
     // Fire and forget welcome email
     triggerWelcomeEmail(userEmail, organizationName);
 
-    // Success - redirect to dashboard
-    router.push('/dashboard');
-    router.refresh();
+    // Hard redirect to dashboard — router.push + refresh causes race conditions
+    window.location.href = '/dashboard';
   }
 
   return (

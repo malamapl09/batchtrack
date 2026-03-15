@@ -1,14 +1,16 @@
 /**
  * Checkout Button Component
- * Triggers Paddle checkout for a specific plan
+ * Creates a Paddle transaction server-side, then opens checkout overlay
  */
 
 'use client';
 
 import * as React from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { usePaddle } from './paddle-provider';
-import { PADDLE_PRICE_IDS, type PlanId, type BillingInterval } from '@/lib/billing/plans';
+import { createCheckoutTransaction } from '@/lib/actions/billing';
+import { type PlanId, type BillingInterval } from '@/lib/billing/plans';
 import { Loader2 } from 'lucide-react';
 
 interface CheckoutButtonProps extends Omit<React.ComponentProps<typeof Button>, 'onClick'> {
@@ -21,7 +23,7 @@ interface CheckoutButtonProps extends Omit<React.ComponentProps<typeof Button>, 
 
 /**
  * CheckoutButton Component
- * Opens Paddle checkout overlay for the specified plan
+ * Creates a server-side transaction then opens Paddle checkout overlay
  */
 export function CheckoutButton({
   planId,
@@ -32,32 +34,44 @@ export function CheckoutButton({
   disabled,
   ...props
 }: CheckoutButtonProps) {
-  const { openCheckout, isLoaded } = usePaddle();
+  const { openCheckoutWithTransaction, isLoaded } = usePaddle();
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleClick = () => {
-    const priceId = PADDLE_PRICE_IDS[planId][interval];
-
-    if (!priceId) {
-      console.error(`No price ID configured for ${planId} ${interval}`);
+  const handleClick = async () => {
+    if (!email) {
+      console.error('Email is required for checkout');
       return;
     }
 
-    openCheckout(priceId, {
-      email,
-      customData: organizationId ? { organizationId } : undefined,
-    });
+    setIsCreating(true);
+
+    try {
+      const result = await createCheckoutTransaction(planId, interval, email);
+
+      if (result.error || !result.transactionId) {
+        console.error('Failed to create transaction:', result.error);
+        setIsCreating(false);
+        return;
+      }
+
+      openCheckoutWithTransaction(result.transactionId);
+    } catch (error) {
+      console.error('Checkout error:', error);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
     <Button
       onClick={handleClick}
-      disabled={disabled || !isLoaded}
+      disabled={disabled || !isLoaded || isCreating}
       {...props}
     >
-      {!isLoaded ? (
+      {!isLoaded || isCreating ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Loading...
+          {isCreating ? 'Preparing...' : 'Loading...'}
         </>
       ) : (
         children
@@ -79,7 +93,7 @@ export function UpgradeButton({
 }) {
   return (
     <Button className={className} asChild>
-      <a href="/pricing">{children}</a>
+      <a href="/settings/upgrade">{children}</a>
     </Button>
   );
 }

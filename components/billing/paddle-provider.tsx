@@ -12,6 +12,7 @@ interface PaddleContextType {
   paddle: Paddle | null;
   isLoaded: boolean;
   openCheckout: (priceId: string, options?: CheckoutOptions) => void;
+  openCheckoutWithTransaction: (transactionId: string) => void;
 }
 
 interface CheckoutOptions {
@@ -23,6 +24,7 @@ const PaddleContext = createContext<PaddleContextType>({
   paddle: null,
   isLoaded: false,
   openCheckout: () => {},
+  openCheckoutWithTransaction: () => {},
 });
 
 /**
@@ -60,11 +62,9 @@ export function PaddleProvider({ children }: PaddleProviderProps) {
       token: clientToken,
       environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'production' ? 'production' : 'sandbox',
       eventCallback: (event) => {
-        // Handle Paddle events
         switch (event.name) {
           case 'checkout.completed':
             console.log('Checkout completed:', event.data);
-            // Redirect to success page or refresh subscription status
             window.location.href = '/dashboard?subscription=success';
             break;
           case 'checkout.closed':
@@ -106,8 +106,29 @@ export function PaddleProvider({ children }: PaddleProviderProps) {
     [paddle]
   );
 
+  const openCheckoutWithTransaction = useCallback(
+    (transactionId: string) => {
+      if (!paddle) {
+        console.error('Paddle not initialized');
+        return;
+      }
+
+      paddle.Checkout.open({
+        transactionId,
+        settings: {
+          displayMode: 'overlay',
+          theme: 'light',
+          locale: 'en',
+          allowLogout: true,
+          showAddDiscounts: true,
+        },
+      });
+    },
+    [paddle]
+  );
+
   return (
-    <PaddleContext.Provider value={{ paddle, isLoaded, openCheckout }}>
+    <PaddleContext.Provider value={{ paddle, isLoaded, openCheckout, openCheckoutWithTransaction }}>
       {children}
     </PaddleContext.Provider>
   );
