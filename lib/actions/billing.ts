@@ -8,7 +8,7 @@
 import { getUserWithOrganization } from '@/lib/supabase/server';
 import { PADDLE_PRICE_IDS, type PlanId, type BillingInterval } from '@/lib/billing/plans';
 
-const PADDLE_API_URL = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'production'
+const PADDLE_API_URL = (process.env.PADDLE_ENVIRONMENT || process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT) === 'production'
   ? 'https://api.paddle.com'
   : 'https://sandbox-api.paddle.com';
 
