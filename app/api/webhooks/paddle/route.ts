@@ -58,6 +58,16 @@ function mapPaddlePlanToId(priceId: string): 'starter' | 'pro' | null {
   const proMonthly = process.env.PADDLE_PRO_MONTHLY || process.env.NEXT_PUBLIC_PADDLE_PRO_MONTHLY;
   const proYearly = process.env.PADDLE_PRO_YEARLY || process.env.NEXT_PUBLIC_PADDLE_PRO_YEARLY;
 
+  console.log('Price ID mapping debug:', {
+    input: priceId,
+    starterMonthly,
+    starterYearly,
+    proMonthly,
+    proYearly,
+    rawPaddle: process.env.PADDLE_STARTER_MONTHLY,
+    rawNextPublic: process.env.NEXT_PUBLIC_PADDLE_STARTER_MONTHLY,
+  });
+
   if (priceId === starterMonthly || priceId === starterYearly) {
     return 'starter';
   }
