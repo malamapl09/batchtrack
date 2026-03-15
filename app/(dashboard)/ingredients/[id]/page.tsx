@@ -13,6 +13,7 @@ import { Pencil, ArrowLeft, AlertTriangle, TrendingUp } from 'lucide-react';
 import { formatQuantity, formatCostPerUnit, isLowStock, formatCurrency } from '@/lib/utils/conversions';
 import { UNIT_LABELS, UNIT_SHORT_LABELS } from '@/lib/constants';
 import { IngredientCostHistoryChart } from '@/components/reports/charts';
+import { LogWasteDialog } from '@/components/ingredients/log-waste-dialog';
 import type { UnitType } from '@/types';
 
 interface IngredientDetailPageProps {
@@ -72,12 +73,20 @@ export default async function IngredientDetailPage({ params }: IngredientDetailP
             )}
           </div>
         </div>
-        <Button asChild>
-          <Link href={`/ingredients/${id}/edit`}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <LogWasteDialog
+            ingredientId={id}
+            ingredientName={ingredient.name}
+            usageUnit={UNIT_SHORT_LABELS[usageUnit] || usageUnit}
+            currentStock={ingredient.stock_quantity}
+          />
+          <Button asChild>
+            <Link href={`/ingredients/${id}/edit`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
